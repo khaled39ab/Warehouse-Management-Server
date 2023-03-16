@@ -19,20 +19,32 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 async function run() {
     const itemsCollection = client.db("WarehouseManagement").collection("Items");
 
-    /* 
-        ================================================================================
-        +++++++++++++++++++++++++++++++   Items Section  +++++++++++++++++++++++++++++++
-        ================================================================================
-    */
+    try {
+        /* 
+          ================================================================================
+          +++++++++++++++++++++++++++++++   Items Section  +++++++++++++++++++++++++++++++
+          ================================================================================
+      */
 
-        app.get('/items', async(req, res) =>{
+        app.get('/items', async (req, res) => {
             const query = {};
             const cursor = itemsCollection.find(query);
             const result = await cursor.toArray();
             res.send(result);
-        })
+        });
 
-}
+
+        app.post('/items', async (req, res) => {
+            const item = req.body;
+            const result = await itemsCollection.insertOne(item);
+            res.send(result);
+        });
+
+
+    } finally {
+        // await client.close();
+    }
+};
 
 run().catch(console.dir);
 
