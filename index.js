@@ -49,17 +49,20 @@ async function run() {
         });
 
 
-        app.put('updateItem/:id', async(req, res) => {
+        app.put('item/:id', async(req, res) => {
             const id = req.params.id;
             const item = req.body;
-            const option = { upsert: true }
-            const filter = {_id: new ObjectId(id)}
-            const updateDocs = {
-                item
-            }
+            console.log(item);
+            // const option = { upsert: true }
+            // const filter = {_id: new ObjectId(id)}
+            // const updatedItem= {
+            //     $set:{
 
-            const result = await itemsCollection.updateOne(filter, updateDocs, option)
-            res.send(result)
+            //     }
+            // }
+
+            // const result = await itemsCollection.updateOne(filter, updatedItem, option)
+            // res.send(result)
         });
 
 
