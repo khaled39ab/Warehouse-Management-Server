@@ -41,11 +41,18 @@ async function run() {
         });
 
 
-        app.get('/updateItem/:id', async(req, res) => {
+        app.get('/item/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: new ObjectId(id) };
             const cursor = await itemsCollection.findOne(query);
             res.send(cursor);
+        });
+
+
+        app.put('updateItem/:id', (req, res) => {
+            const id = req.params.id;
+            const item = req.body;
+            const option = { upsert: true }
         });
 
 
