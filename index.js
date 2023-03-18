@@ -75,6 +75,25 @@ async function run() {
         });
 
 
+        app.patch('/delivered/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) };
+
+            const delivered = req.body;
+            // console.log(delivered);
+
+            const updateDelivered = {
+                $set: {
+                    quantity: delivered.quantity
+                }
+            }
+
+            const result = await itemsCollection.updateOne(query, updateDelivered);
+            res.send(result);
+
+        });
+
+
     } finally {
         // await client.close();
     }
