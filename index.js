@@ -10,8 +10,6 @@ app.use(cors());
 app.use(express.json());
 
 
-// const uri = `mongodb+srv://${process.env.WAREHOUSE_USER}:${process.env.WAREHOUSE_PASSWORD}@cluster0.qudsyns.mongodb.net/?retryWrites=true&w=majority`;
-
 const uri = `mongodb+srv://${process.env.WAREHOUSE_USER}:${process.env.WAREHOUSE_PASSWORD}@cluster0.uwlfrmd.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
@@ -49,20 +47,31 @@ async function run() {
         });
 
 
-        app.put('item/:id', async(req, res) => {
+        app.put('/item/:id', async (req, res) => {
             const id = req.params.id;
+
             const item = req.body;
-            console.log(item);
-            // const option = { upsert: true }
-            // const filter = {_id: new ObjectId(id)}
-            // const updatedItem= {
-            //     $set:{
+            const { company_name, car_model, car_color, model_year, car_vin, car_price, photo_url, quantity, description } = item;
 
-            //     }
-            // }
+            const option = { upsert: true }
+            const filter = { _id: new ObjectId(id) }
 
-            // const result = await itemsCollection.updateOne(filter, updatedItem, option)
-            // res.send(result)
+            const updatedItem = {
+                $set: {
+                    company_name: company_name,
+                    car_model: car_model,
+                    car_color: car_color,
+                    model_year: model_year,
+                    car_vin: car_vin,
+                    car_price: car_price,
+                    photo_url: photo_url,
+                    quantity: quantity,
+                    description: description
+                }
+            };
+
+            const result = await itemsCollection.updateOne(filter, updatedItem, option);
+            res.send(result);
         });
 
 
