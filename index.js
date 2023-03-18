@@ -49,24 +49,24 @@ async function run() {
 
         app.put('/item/:id', async (req, res) => {
             const id = req.params.id;
+            const filter = { _id: new ObjectId(id) };
 
             const item = req.body;
             const { company_name, car_model, car_color, model_year, car_vin, car_price, photo_url, quantity, description } = item;
 
-            const option = { upsert: true }
-            const filter = { _id: new ObjectId(id) }
+            const option = { upsert: true };
 
             const updatedItem = {
                 $set: {
-                    company_name: company_name,
-                    car_model: car_model,
-                    car_color: car_color,
-                    model_year: model_year,
-                    car_vin: car_vin,
-                    car_price: car_price,
-                    photo_url: photo_url,
-                    quantity: quantity,
-                    description: description
+                    company_name,
+                    car_model,
+                    car_color,
+                    model_year,
+                    car_vin,
+                    car_price,
+                    photo_url,
+                    quantity,
+                    description
                 }
             };
 
