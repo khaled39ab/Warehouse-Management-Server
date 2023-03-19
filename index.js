@@ -24,8 +24,23 @@ async function run() {
           ================================================================================
       */
 
+        // app.get('/items', async (req, res) => {
+        //     const query = {};
+        //     const cursor = itemsCollection.find(query);
+        //     const result = await cursor.toArray();
+        //     res.send(result);
+        // });
+
         app.get('/items', async (req, res) => {
-            const query = {};
+            let query = {};
+            const provider_email = req.query.provider_email;
+            console.log(provider_email);
+
+            if(provider_email){
+                query = {
+                    provider_email
+                }
+            }
             const cursor = itemsCollection.find(query);
             const result = await cursor.toArray();
             res.send(result);
@@ -80,7 +95,6 @@ async function run() {
             const query = { _id: new ObjectId(id) };
 
             const delivered = req.body;
-            // console.log(delivered);
 
             const updateDelivered = {
                 $set: {
