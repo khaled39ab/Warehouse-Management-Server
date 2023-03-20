@@ -36,9 +36,9 @@ async function run() {
             const provider_email = req.query.provider_email;
             console.log(provider_email);
 
-            if(provider_email){
+            if (provider_email) {
                 query = {
-                    provider_email
+                    provider_email: provider_email
                 }
             }
             const cursor = itemsCollection.find(query);
@@ -117,7 +117,15 @@ run().catch(console.dir);
 
 
 app.get('/', (req, res) => {
-    res.send("Hello from warehouse management server")
+    res.send(
+        `Hello from warehouse management server </br>
+        </br>
+        Routes are: </br>
+        1- /items ,  </br>
+        2- /item/:id, </br>
+        3- 
+        `
+    )
 });
 
 app.listen(port, () => {
