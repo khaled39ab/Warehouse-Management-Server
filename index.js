@@ -24,23 +24,23 @@ async function run() {
           ================================================================================
       */
 
-        // app.get('/items', async (req, res) => {
-        //     const query = {};
-        //     const cursor = itemsCollection.find(query);
-        //     const result = await cursor.toArray();
-        //     res.send(result);
-        // });
-
         app.get('/items', async (req, res) => {
             let query = {};
             const provider_email = req.query.provider_email;
-            console.log(provider_email);
+            const company_name = req.query.company_name;
 
             if (provider_email) {
                 query = {
                     provider_email: provider_email
                 }
             }
+
+            if (company_name) {
+                query = {
+                    company_name
+                }
+            }
+
             const cursor = itemsCollection.find(query);
             const result = await cursor.toArray();
             res.send(result);
