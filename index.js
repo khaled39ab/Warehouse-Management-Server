@@ -27,7 +27,7 @@ async function run() {
         app.get('/items', async (req, res) => {
             const provider_email = req.query.provider_email;
             const company_name = req.query.company_name;
-            
+
             let query = {};
 
             if (provider_email) {
@@ -107,6 +107,15 @@ async function run() {
             res.send(result);
 
         });
+
+
+        app.delete('/item/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) }
+            // console.log(query);
+            const result = await itemsCollection.deleteOne(query);
+            res.send(result);
+        })
 
 
     } finally {
