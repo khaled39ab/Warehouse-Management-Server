@@ -65,7 +65,8 @@ async function run() {
             const result = await cursor.toArray();
             res.send(result);
         });
-        
+
+
         app.get('/my-items', verifyJWT, async (req, res) => {
             const provider_email = req.query.provider_email;
 
@@ -84,11 +85,9 @@ async function run() {
 
 
         app.get('/company-items', async (req, res) => {
-            const provider_email = req.query.provider_email;
             const company_name = req.query.company_name;
 
             let query = {};
-
 
             if (company_name) {
                 query = {
@@ -102,7 +101,7 @@ async function run() {
         });
 
 
-        app.post('/items', async (req, res) => {
+        app.post('/items', verifyJWT, async (req, res) => {
             const item = req.body;
             const result = await itemsCollection.insertOne(item);
             res.send(result);
@@ -117,10 +116,10 @@ async function run() {
         });
 
 
-        app.put('/item/:id', async (req, res) => {
+        app.put('/item/:id',verifyJWT, async (req, res) => {
             const id = req.params.id;
             const filter = { _id: new ObjectId(id) };
-            
+
             const item = req.body;
             const { company_name, car_model, car_color, model_year, car_vin, car_price, photo_url, quantity, description } = item;
 
