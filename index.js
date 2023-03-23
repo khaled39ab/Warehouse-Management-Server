@@ -17,7 +17,24 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 
 
 function verifyJWT(req, res, next) {
-    const authHeaders = req.he
+    const authHeader = req.headers.authorization;
+
+    if (!authHeader) {
+        res.status(401).send({ message: 'unauthorized access' })
+    }
+
+    const token = authHeader.split(' ')[1];
+
+    jwt.verify(token, process.env.ACCESS_SECRET_TOKEN, (err, decoded) => {
+        if (err) {
+            res.status(403).send({ message: 'forbidden access' })
+        }
+        req.decoded = decoded;
+
+        next();
+    })
+
+
 }
 
 
@@ -42,8 +59,15 @@ async function run() {
         */
 
         app.get('/items', async (req, res) => {
+            let query = {};
+
+            const cursor = itemsCollection.find(query);
+            const result = await cursor.toArray();
+            res.send(result);
+        });
+        
+        app.get('/my-items', verifyJWT, async (req, res) => {
             const provider_email = req.query.provider_email;
-            const company_name = req.query.company_name;
 
             let query = {};
 
@@ -52,6 +76,19 @@ async function run() {
                     provider_email: provider_email
                 }
             };
+
+            const cursor = itemsCollection.find(query);
+            const result = await cursor.toArray();
+            res.send(result);
+        });
+
+
+        app.get('/company-items', async (req, res) => {
+            const provider_email = req.query.provider_email;
+            const company_name = req.query.company_name;
+
+            let query = {};
+
 
             if (company_name) {
                 query = {
@@ -83,7 +120,7 @@ async function run() {
         app.put('/item/:id', async (req, res) => {
             const id = req.params.id;
             const filter = { _id: new ObjectId(id) };
-
+            
             const item = req.body;
             const { company_name, car_model, car_color, model_year, car_vin, car_price, photo_url, quantity, description } = item;
 
