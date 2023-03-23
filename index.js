@@ -20,14 +20,14 @@ function verifyJWT(req, res, next) {
     const authHeader = req.headers.authorization;
 
     if (!authHeader) {
-        res.status(401).send({ message: 'unauthorized access' })
+        return res.status(401).send({ message: 'unauthorized access' })
     }
 
     const token = authHeader.split(' ')[1];
 
     jwt.verify(token, process.env.ACCESS_SECRET_TOKEN, (err, decoded) => {
         if (err) {
-            res.status(403).send({ message: 'forbidden access' })
+            return res.status(401).send({ message: 'unauthorized access' })
         }
         req.decoded = decoded;
 
@@ -68,13 +68,18 @@ async function run() {
 
 
         app.get('/my-items', verifyJWT, async (req, res) => {
-            const provider_email = req.query.provider_email;
+            const providerEmail = req.query.provider_email;
+            const decodedEmail = req.decoded.email;
+
+            if (providerEmail !== decodedEmail) {
+                return res.status(403).send({ message: 'forbidden access' })
+            }
 
             let query = {};
 
-            if (provider_email) {
+            if (providerEmail) {
                 query = {
-                    provider_email: provider_email
+                    provider_email: providerEmail
                 }
             };
 
@@ -85,13 +90,13 @@ async function run() {
 
 
         app.get('/company-items', async (req, res) => {
-            const company_name = req.query.company_name;
+            const companyName = req.query.company_name;
 
             let query = {};
 
-            if (company_name) {
+            if (companyName) {
                 query = {
-                    company_name
+                    company_name: companyName
                 }
             };
 
@@ -116,7 +121,7 @@ async function run() {
         });
 
 
-        app.put('/item/:id',verifyJWT, async (req, res) => {
+        app.put('/item/:id', verifyJWT, async (req, res) => {
             const id = req.params.id;
             const filter = { _id: new ObjectId(id) };
 
@@ -144,7 +149,7 @@ async function run() {
         });
 
 
-        app.patch('/delivered/:id', async (req, res) => {
+        app.patch('/delivered/:id', verifyJWT, async (req, res) => {
             const id = req.params.id;
             const query = { _id: new ObjectId(id) };
 
@@ -162,7 +167,7 @@ async function run() {
         });
 
 
-        app.delete('/item/:id', async (req, res) => {
+        app.delete('/item/:id', verifyJWT, async (req, res) => {
             const id = req.params.id;
             const query = { _id: new ObjectId(id) }
 
