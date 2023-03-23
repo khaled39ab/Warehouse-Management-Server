@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
+const jwt = require('jsonwebtoken');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const port = process.env.PORT || 4000;
 
@@ -14,15 +15,31 @@ const uri = `mongodb+srv://${process.env.WAREHOUSE_USER}:${process.env.WAREHOUSE
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
 
+
+function verifyJWT(req, res, next) {
+    const authHeaders = req.he
+}
+
+
 async function run() {
-    const itemsCollection = client.db("WarehouseManagement").collection("Items");
 
     try {
+        const itemsCollection = client.db("WarehouseManagement").collection("Items");
+
+
+        app.post('/jwt', (req, res) => {
+            const user = req.body;
+            console.log(user);
+
+            const token = jwt.sign(user, process.env.ACCESS_SECRET_TOKEN, { expiresIn: '1d' });
+            res.send({ token })
+        });
+
         /* 
-          ================================================================================
-          +++++++++++++++++++++++++++++++   Items Section  +++++++++++++++++++++++++++++++
-          ================================================================================
-      */
+            ================================================================================
+            +++++++++++++++++++++++++++++++   Items Section  +++++++++++++++++++++++++++++++
+            ================================================================================
+        */
 
         app.get('/items', async (req, res) => {
             const provider_email = req.query.provider_email;
@@ -112,10 +129,10 @@ async function run() {
         app.delete('/item/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: new ObjectId(id) }
-            // console.log(query);
+
             const result = await itemsCollection.deleteOne(query);
             res.send(result);
-        })
+        });
 
 
     } finally {
@@ -133,7 +150,6 @@ app.get('/', (req, res) => {
         Routes are: </br>
         1- /items ,  </br>
         2- /item/:id, </br>
-        3- 
         `
     )
 });
