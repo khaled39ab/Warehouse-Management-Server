@@ -46,7 +46,7 @@ async function run() {
 
         app.post('/jwt', (req, res) => {
             const user = req.body;
-            
+
             const token = jwt.sign(user, process.env.ACCESS_SECRET_TOKEN, { expiresIn: '1d' });
             res.send({ token })
         });
@@ -166,13 +166,20 @@ async function run() {
         });
 
 
-        app.patch('/restock/:id', async (req, res) => {
+        app.patch('/restock/:id', verifyJWT, async (req, res) => {
             const id = req.params.id;
             const query = { _id: new ObjectId(id) };
 
             const restock = req.body;
 
-            console.log(restock);
+            const updateRestock = {
+                $set: {
+                    quantity: restock.quantity
+                }
+            }
+
+            const result = await itemsCollection.updateOne(query, updateRestock);
+            res.send(result);;
 
 
         });
