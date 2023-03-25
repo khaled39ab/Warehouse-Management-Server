@@ -42,6 +42,7 @@ async function run() {
 
     try {
         const itemsCollection = client.db("WarehouseManagement").collection("Items");
+        const buyingInfoCollection = client.db("WarehouseManagement").collection("BuyingInfo");
 
 
         app.post('/jwt', (req, res) => {
@@ -192,6 +193,23 @@ async function run() {
             const result = await itemsCollection.deleteOne(query);
             res.send(result);
         });
+
+
+
+        /* 
+            ================================================================================
+            +++++++++++++++++++++++++++++   Buying Info Section  +++++++++++++++++++++++++++
+            ================================================================================
+        */
+
+        app.get('/buying-info', async (req, res) => {
+            const query = {};
+
+            const cursor = buyingInfoCollection.find(query);
+            const result = await cursor.toArray();
+            res.send(result);
+        });
+
 
 
     } finally {
