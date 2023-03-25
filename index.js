@@ -15,7 +15,11 @@ const uri = `mongodb+srv://${process.env.WAREHOUSE_USER}:${process.env.WAREHOUSE
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
 
-
+/* 
+    ================================================================================
+    ++++++++++++++++++++++++++++++   Verify JWT Section  +++++++++++++++++++++++++++
+    ================================================================================
+*/
 function verifyJWT(req, res, next) {
     const authHeader = req.headers.authorization;
 
@@ -44,7 +48,11 @@ async function run() {
         const itemsCollection = client.db("WarehouseManagement").collection("Items");
         const buyingInfoCollection = client.db("WarehouseManagement").collection("BuyingInfo");
 
-
+        /* 
+            ==========================================================================
+            +++++++++++++++++++++++++++   Post JWT Section  +++++++++++++++++++++++++
+            ==========================================================================
+        */
         app.post('/jwt', (req, res) => {
             const user = req.body;
 
@@ -52,10 +60,12 @@ async function run() {
             res.send({ token })
         });
 
+
+
         /* 
-            ================================================================================
-            +++++++++++++++++++++++++++++++   Items Section  +++++++++++++++++++++++++++++++
-            ================================================================================
+            ============================================================================
+            +++++++++++++++++++++++++++++   Items Section  +++++++++++++++++++++++++++++
+            ============================================================================
         */
 
         app.get('/items', async (req, res) => {
@@ -67,6 +77,11 @@ async function run() {
         });
 
 
+        /* 
+            ============================================================================
+            +++++++++++++++++++   Get Item by Query search Section  ++++++++++++++++++++
+            ============================================================================
+        */
         app.get('/my-items', verifyJWT, async (req, res) => {
             const providerEmail = req.query.provider_email;
             const decodedEmail = req.decoded.email;
@@ -106,6 +121,12 @@ async function run() {
         });
 
 
+
+        /* 
+            ============================================================================
+            +++++++++++++++++++++++++++   Insert Item Section  +++++++++++++++++++++++++
+            ============================================================================
+        */
         app.post('/items', verifyJWT, async (req, res) => {
             const item = req.body;
             const result = await itemsCollection.insertOne(item);
@@ -113,6 +134,12 @@ async function run() {
         });
 
 
+
+        /* 
+            ============================================================================
+            +++++++++++++++++++++++   Get specific item Section  +++++++++++++++++++++++
+            ============================================================================
+        */
         app.get('/item/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: new ObjectId(id) };
@@ -121,6 +148,12 @@ async function run() {
         });
 
 
+
+        /* 
+            ============================================================================
+            +++++++++++++++++++++++   Update items info Section  +++++++++++++++++++++++
+            ============================================================================
+        */
         app.put('/item/:id', verifyJWT, async (req, res) => {
             const id = req.params.id;
             const filter = { _id: new ObjectId(id) };
@@ -149,6 +182,12 @@ async function run() {
         });
 
 
+
+        /* 
+            ============================================================================
+            ++++++++++++++++++++++   Update specific data Section  +++++++++++++++++++++
+            ============================================================================
+        */
         app.patch('/delivered/:id', verifyJWT, async (req, res) => {
             const id = req.params.id;
             const query = { _id: new ObjectId(id) };
@@ -186,6 +225,12 @@ async function run() {
         });
 
 
+
+        /* 
+            ============================================================================
+            +++++++++++++++++++++++++   Delete Items Section  +++++++++++++++++++++++++
+            ============================================================================
+        */
         app.delete('/item/:id', verifyJWT, async (req, res) => {
             const id = req.params.id;
             const query = { _id: new ObjectId(id) }
@@ -197,9 +242,9 @@ async function run() {
 
 
         /* 
-            ================================================================================
-            +++++++++++++++++++++++++++++   Buying Info Section  +++++++++++++++++++++++++++
-            ================================================================================
+            ============================================================================
+            +++++++++++++++++++++++++++   Buying Info Section  +++++++++++++++++++++++++
+            ============================================================================
         */
 
         app.get('/buying-info', async (req, res) => {
@@ -227,6 +272,7 @@ app.get('/', (req, res) => {
         Routes are: </br>
         1- /items ,  </br>
         2- /item/:id, </br>
+        3- /buying-info
         `
     )
 });
