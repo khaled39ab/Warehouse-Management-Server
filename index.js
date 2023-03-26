@@ -31,7 +31,7 @@ function verifyJWT(req, res, next) {
 
     jwt.verify(token, process.env.ACCESS_SECRET_TOKEN, (err, decoded) => {
         if (err) {
-            return res.status(401).send({ message: 'unauthorized access' })
+            return res.status(403).send({ message: 'unauthorized access' })
         }
         req.decoded = decoded;
 
@@ -129,6 +129,7 @@ async function run() {
         */
         app.post('/items', verifyJWT, async (req, res) => {
             const item = req.body;
+            console.log(item);
             const result = await itemsCollection.insertOne(item);
             res.send(result);
         });
