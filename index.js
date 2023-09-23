@@ -7,8 +7,17 @@ const port = process.env.PORT || 4000;
 
 const app = express();
 
-app.use(cors());
+// app.use(cors());
 app.use(express.json());
+const corsConfig = {
+    origin: "*",
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+  };
+  
+  app.use(cors(corsConfig));
+  app.options(cors(corsConfig));
+  
 
 
 const uri = `mongodb+srv://${process.env.WAREHOUSE_USER}:${process.env.WAREHOUSE_PASSWORD}@cluster0.uwlfrmd.mongodb.net/?retryWrites=true&w=majority`;
